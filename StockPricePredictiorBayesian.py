@@ -29,7 +29,7 @@ from SupportPredictorFunctions import GetStockDataList, SaveModelAndQuit
 
 
 import logging
-import bokeh.plotting as bk
+#import bokeh.plotting as bk
 from sklearn.metrics import r2_score
 import aboleth as ab
 
@@ -328,122 +328,6 @@ def TrainBayesian(session,DatabaseTables,stocksym,RelativeTimeShift,DEBUG,typeSt
 
     print('Done exporting!')
     sys.exit(0)
-
-
-            #     if(DEBUG == 1):
-            #        # line2.set_ydata(pred)
-            #         plt.title('Epoch ' + str(e) + ', Batch ' + str(i))
-
-
-            #         print('Cost Train: ', Cost_train[-1])
-            #         print('Cost Test: ', Cost_test[-1])
-            #         print("Pred shape 0: " + str(pred.shape[0]) + ", 1: " + str(pred.shape[1]))
-            #         print(pred)
-            #         print("\n")
-                    
-            #         print("Error\n")
-            #         print(Error)
-            #         print("\n")
-
-            # if(DEBUG == 1):
-            #     plt.pause(0.01)
-    # epoch = 300
-
-    # # Training loop
-    # train_loss = []
-    # test_loss = []
-    # for i in range(epoch):
-    #     rand_index = np.random.choice(len(Xdata_train), size=batch_size)
-    #     rand_x = np.transpose([Xdata_train[rand_index]])
-    #     rand_y = np.transpose([Ydata_train[rand_index]])
-    #     #rand_x = Xdata_train[rand_index]
-    #     #rand_y = Ydata_train[rand_index]
-    #     sess.run(train_step, feed_dict={X: rand_x, Y: rand_y})
-        
-    #     temp_train_loss = sess.run(loss, feed_dict={X: np.transpose([Xdata_train]), Y: np.transpose([Ydata_train])})
-    #     train_loss.append(temp_train_loss)
-        
-    #     temp_test_loss = sess.run(loss, feed_dict={X: np.transpose([Xdata_test]), Y: np.transpose([Ydata_test])})
-    #     test_loss.append(temp_test_loss)
-
-    #     if(DEBUG == 1):
-    #         if (i+1)%50==0:
-    #             print('-----------')
-    #             print('Generation: ' + str(i+1))
-    #             print('A = ' + str(sess.run(A)) + ' b = ' + str(sess.run(b)))
-    #             print('Train Loss = ' + str(temp_train_loss))
-    #             print('Test Loss = ' + str(temp_test_loss))
-
-
-    # if(DEBUG == 1):
-    #     # Extract Coefficients
-    #     [[slope]] = sess.run(A)
-    #     [[y_intercept]] = sess.run(b)
-    #     [width] = sess.run(epsilon)
-
-    #     # Get best fit line
-    #     best_fit = []
-    #     best_fit_upper = []
-    #     best_fit_lower = []
-    #     for i in Xdata_train:
-    #       best_fit.append(slope*i+y_intercept)
-    #       best_fit_upper.append(slope*i+y_intercept+width)
-    #       best_fit_lower.append(slope*i+y_intercept-width)
-
-
-    #     # Plot fit with data
-    #     plt.plot(Xdata_train, Ydata_train, 'o', label='Data Points')
-    #     plt.plot(Xdata_train, best_fit, 'r-', label='SVM Regression Line', linewidth=3)
-    #     plt.plot(Xdata_train, best_fit_upper, 'r--', linewidth=2)
-    #     plt.plot(Xdata_train, best_fit_lower, 'r--', linewidth=2)
-    #     plt.ylim([0, 1])
-    #     plt.legend(loc='lower right')
-    #     plt.title('Current Price vs Future Price')
-    #     plt.xlabel('Current Price')
-    #     plt.ylabel('Future Price')
-    #     plt.show()
-
-    #     # Plot loss over time
-    #     plt.plot(train_loss, 'k-', label='Train Set Loss')
-    #     plt.plot(test_loss, 'r--', label='Test Set Loss')
-    #     plt.title('L2 Loss per Generation')
-    #     plt.xlabel('Generation')
-    #     plt.ylabel('L2 Loss')
-    #     plt.legend(loc='upper right')
-    #     plt.show()
-
-    # ModelName = 'BAY'+ stocksym
-    # #SaveModelAndQuit(sess,ModelName)
-
-    #  # Export model
-    # export_path_base = FLAGS.work_dir + 'BAY_'+ typeString + '_'+stocksym
-    # export_path = os.path.join(tf.compat.as_bytes(export_path_base),tf.compat.as_bytes(str(FLAGS.model_version)))
-    # #export_path = ModelName + '/' + export_path 
-    # print('Exporting trained model to', export_path)
-    # builder = tf.saved_model.builder.SavedModelBuilder(export_path)
-
-    # tensor_info_x = tf.saved_model.utils.build_tensor_info(X)
-    # tensor_info_y = tf.saved_model.utils.build_tensor_info(Out) #THIS IS IMPORTANT!!! NOT THE PLACEHOLDER!!!!!!!!
-
-    # prediction_signature = (
-    #     tf.saved_model.signature_def_utils.build_signature_def(
-    #       inputs={'input': tensor_info_x},
-    #       outputs={'output': tensor_info_y},
-    #       method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))
-
-    # legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
-    # builder.add_meta_graph_and_variables(
-    #     sess, [tf.saved_model.tag_constants.SERVING],
-    #     signature_def_map={
-    #       'prediction':
-    #           prediction_signature,
-    #   },
-    #   legacy_init_op=legacy_init_op)
-
-    # builder.save()
-
-    # print('Done exporting!')
-    # sys.exit(0)
 
 
 def main():
