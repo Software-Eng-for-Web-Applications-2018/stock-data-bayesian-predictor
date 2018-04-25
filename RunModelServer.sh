@@ -1,4 +1,16 @@
+
 #! /bin/sh 
+
+#
+# CREATED BY JOHN GRUN
+#   APRIL 21 2018 
+#
+# TESTED BY JOHN GRUN
+#
+#MODIFIED BY JOHN GRUN 
+#
+
+
 tensorflow_model_server --port=9040 --model_name=BAYMODEL --model_base_path=$(pwd)/BAY_RT_AABA &
 tensorflow_model_server --port=9041 --model_name=BAYMODEL --model_base_path=$(pwd)/BAY_RT_AAPL &
 tensorflow_model_server --port=9042 --model_name=BAYMODEL --model_base_path=$(pwd)/BAY_RT_AMD &

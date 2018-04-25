@@ -1,3 +1,13 @@
+#
+# CREATED BY JOHN GRUN
+#   APRIL 21 2018 
+#
+# TESTED BY JOHN GRUN
+#
+#MODIFIED BY JOHN GRUN 
+#
+
+
 import os
 import tensorflow as tf
 import numpy as np

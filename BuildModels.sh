@@ -1,3 +1,13 @@
+#
+# CREATED BY JOHN GRUN
+#   APRIL 21 2018 
+#
+# TESTED BY JOHN GRUN
+#
+#MODIFIED BY JOHN GRUN 
+#
+
+
 python3 ./StockPricePredictiorBayesian.py --sym 'AABA' --shiftamount 1 --DEBUG 0 --RT 0     
 python3 ./StockPricePredictiorBayesian.py --sym 'AAPL' --shiftamount 1 --DEBUG 0 --RT 0 
 python3 ./StockPricePredictiorBayesian.py --sym 'AMD' --shiftamount 1 --DEBUG 0 --RT 0     
