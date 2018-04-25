@@ -39,7 +39,7 @@ class mainSessRunning():
         #data, label = temp_data, np.sum(temp_data * np.array([1,2,3]).astype(np.float32), 1)
         data = val_x
         print("Data is \n")
-        print(data)
+        print(data[0])
         print("\n")
 
         # print("Data shape is \n")
@@ -52,7 +52,7 @@ class mainSessRunning():
         
         self.request.inputs['input'].CopyFrom(tf.contrib.util.make_tensor_proto(data))
         #self.request.inputs['input'].CopyFrom(tf.contrib.util.make_tensor_proto(data, shape=data.shape))
-        result = self.stub.Predict(self.request, 5.0)
+        result = self.stub.Predict(self.request, 15.0)
         return result
 
 run = mainSessRunning()
