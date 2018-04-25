@@ -44,6 +44,8 @@ tf.app.flags.DEFINE_integer('DEBUG', 0, 'Enable the debugging output')
 tf.app.flags.DEFINE_integer('RT', 0, 'Future 0 or Historical 1') 
 FLAGS = tf.app.flags.FLAGS
 
+TrainThreshold = 0.05
+
 # adapted from aboleth tutorials 
 #https://github.com/data61/aboleth/blob/master/demos/regression_tutorial.py
 
@@ -197,7 +199,7 @@ def TrainBayesian(session,DatabaseTables,stocksym,RelativeTimeShift,DEBUG,typeSt
 
     # # Build X and y
     X_train = Xdata_train;
-    y_train = Ydata_train[:, 2]
+    y_train = Ydata_train[:, 0]
 
     if(DEBUG == 1):
         print("X data\n")
@@ -208,7 +210,7 @@ def TrainBayesian(session,DatabaseTables,stocksym,RelativeTimeShift,DEBUG,typeSt
 
     # # print(y_train)
     X_test = Xdata_test
-    y_test = Ydata_test[:, 2]
+    y_test = Ydata_test[:, 0]
 
     #NumElementsPerRow = Xdata_train.shape[1]
     # NumElementsOut = y_train.shape[0]
@@ -231,7 +233,8 @@ def TrainBayesian(session,DatabaseTables,stocksym,RelativeTimeShift,DEBUG,typeSt
 
     #global_step = tf.train.create_global_step()
     #train = optimizer.minimize(loss, global_step=global_step)
-    Cost = loss
+    #Cost = loss
+    Cost = tf.reduce_mean(tf.squared_difference(Out, Y))
     Optimizer = tf.train.AdamOptimizer().minimize(Cost, global_step=tf.train.create_global_step())
 
     # Cost function
@@ -278,65 +281,72 @@ def TrainBayesian(session,DatabaseTables,stocksym,RelativeTimeShift,DEBUG,typeSt
             sess.run(Optimizer, feed_dict={X: batch_x, Y: batch_y})
 
             # Show progress
-            if np.mod(i, 50) == 0:
+            #if np.mod(i, 50) == 0:
                 # Cost train and test
-                # Cost_train.append(sess.run(Cost, feed_dict={X: X_train, Y: y_train}))
-                # Cost_test.append(sess.run(Cost, feed_dict={X: X_test, Y: y_test}))
+                #Cost_train.append(sess.run(Cost, feed_dict={X: X_train, Y: y_train}))
+                #Cost_test.append(sess.run(Cost, feed_dict={X: X_test, Y: y_test}))
 
                 # Prediction
                 # pred = sess.run(Out, feed_dict={X: X_test})
-                # Error = np.average(np.abs(y_test - pred))
-                if(1):
-                     #ModelName = 'NN' + stocksym
-                    #SaveModelAndQuit(net,ModelName)
-                        # Export model
-                    export_path_base = FLAGS.work_dir + 'NN_' + typeString + '_'+ stocksym
-                    export_path = os.path.join(tf.compat.as_bytes(export_path_base),tf.compat.as_bytes(str(FLAGS.model_version)))
-                    #export_path = ModelName + '/' + export_path 
-                    print('Exporting trained model to', export_path)
-                    builder = tf.saved_model.builder.SavedModelBuilder(export_path)
+                # #print(pred)
+                # print("Ytest\n")
+                # print(y_test)
+                # print("pred\n")
+                # print(pred)
 
-                    tensor_info_x = tf.saved_model.utils.build_tensor_info(X)
-                    tensor_info_y = tf.saved_model.utils.build_tensor_info(Out) #THIS IS IMPORTANT!!! NOT THE PLACEHOLDER!!!!!!!!
+                # Error = np.average(np.abs(pred - y_test))
+                # print(Error); 
+                # if(Error < TrainThreshold):
+                 #ModelName = 'NN' + stocksym
+                #SaveModelAndQuit(net,ModelName)
+                    # Export model
+    export_path_base = FLAGS.work_dir + 'BAY_' + typeString + '_'+ stocksym
+    export_path = os.path.join(tf.compat.as_bytes(export_path_base),tf.compat.as_bytes(str(FLAGS.model_version)))
+    #export_path = ModelName + '/' + export_path 
+    print('Exporting trained model to', export_path)
+    builder = tf.saved_model.builder.SavedModelBuilder(export_path)
 
-                    prediction_signature = (
-                        tf.saved_model.signature_def_utils.build_signature_def(
-                          inputs={'input': tensor_info_x},
-                          outputs={'output': tensor_info_y},
-                          method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))
+    tensor_info_x = tf.saved_model.utils.build_tensor_info(X)
+    tensor_info_y = tf.saved_model.utils.build_tensor_info(Out) #THIS IS IMPORTANT!!! NOT THE PLACEHOLDER!!!!!!!!
 
-                    legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
-                    builder.add_meta_graph_and_variables(
-                        sess, [tf.saved_model.tag_constants.SERVING],
-                        signature_def_map={
-                          'prediction':
-                              prediction_signature,
-                      },
-                      legacy_init_op=legacy_init_op)
+    prediction_signature = (
+        tf.saved_model.signature_def_utils.build_signature_def(
+          inputs={'input': tensor_info_x},
+          outputs={'output': tensor_info_y},
+          method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))
 
-                    builder.save()
+    legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
+    builder.add_meta_graph_and_variables(
+        sess, [tf.saved_model.tag_constants.SERVING],
+        signature_def_map={
+          'prediction':
+              prediction_signature,
+      },
+      legacy_init_op=legacy_init_op)
 
-                    print('Done exporting!')
-                    sys.exit(0)
+    builder.save()
 
-
-                if(DEBUG == 1):
-                   # line2.set_ydata(pred)
-                    plt.title('Epoch ' + str(e) + ', Batch ' + str(i))
+    print('Done exporting!')
+    sys.exit(0)
 
 
-                    print('Cost Train: ', Cost_train[-1])
-                    print('Cost Test: ', Cost_test[-1])
-                    print("Pred shape 0: " + str(pred.shape[0]) + ", 1: " + str(pred.shape[1]))
-                    print(pred)
-                    print("\n")
+            #     if(DEBUG == 1):
+            #        # line2.set_ydata(pred)
+            #         plt.title('Epoch ' + str(e) + ', Batch ' + str(i))
+
+
+            #         print('Cost Train: ', Cost_train[-1])
+            #         print('Cost Test: ', Cost_test[-1])
+            #         print("Pred shape 0: " + str(pred.shape[0]) + ", 1: " + str(pred.shape[1]))
+            #         print(pred)
+            #         print("\n")
                     
-                    print("Error\n")
-                    print(Error)
-                    print("\n")
+            #         print("Error\n")
+            #         print(Error)
+            #         print("\n")
 
-            if(DEBUG == 1):
-                plt.pause(0.01)
+            # if(DEBUG == 1):
+            #     plt.pause(0.01)
     # epoch = 300
 
     # # Training loop
